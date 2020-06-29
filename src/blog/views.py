@@ -6,7 +6,7 @@ from django.core.mail import send_mail
 from taggit.models import Tag
 from django.db.models import Count
 from django.contrib.postgres.search import (
-    SearchVector, SearchQuery, SearchRank
+    SearchVector, SearchQuery, SearchRank, TrigramSimilarity
 )
 
 from .models import Post, Comment
@@ -171,13 +171,16 @@ def post_search(request):
                 SearchVector('body', weight='B')    # weight='B' means that the search will give more relevant posts that are matched by title - weighting queries
             search_query = SearchQuery(query)
             results = Post.published.annotate(
-                search=search_vector,
-                rank=SearchRank(search_vector, search_query)
+                # search=search_vector,
+                # rank=SearchRank(search_vector, search_query)
+                similarity=TrigramSimilarity('title', query)
             ).filter(
                 # search=search_query
-                rank__gte=0.3
+                # rank__gte=0.3
+                similarity__gt=0.1
             ).order_by(
-                '-rank'
+                # '-rank'
+                '-similarity'
             )
     
     return render(
