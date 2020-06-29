@@ -5,7 +5,9 @@ from django.views.generic import ListView
 from django.core.mail import send_mail
 from taggit.models import Tag
 from django.db.models import Count
-from django.contrib.postgres.search import SearchVector
+from django.contrib.postgres.search import (
+    SearchVector, SearchQuery, SearchRank
+)
 
 from .models import Post, Comment
 from .forms import EmailPostForm, CommentForm, SearchForm
@@ -159,10 +161,23 @@ def post_search(request):
         form = SearchForm(request.GET)
         if form.is_valid():
             query = form.cleaned_data['query']
+            # results = Post.published.annotate(
+            #     search=SearchVector('title', 'body'),
+            # ).filter(
+            #     search=query
+            # )
+            # search_vector = SearchVector('title', 'body')
+            search_vector = SearchVector('title', weight='A') + \
+                SearchVector('body', weight='B')    # weight='B' means that the search will give more relevant posts that are matched by title - weighting queries
+            search_query = SearchQuery(query)
             results = Post.published.annotate(
-                search=SearchVector('title', 'body'),
+                search=search_vector,
+                rank=SearchRank(search_vector, search_query)
             ).filter(
-                search=query
+                # search=search_query
+                rank__gte=0.3
+            ).order_by(
+                '-rank'
             )
     
     return render(
