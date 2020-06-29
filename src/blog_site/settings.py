@@ -89,9 +89,9 @@ WSGI_APPLICATION = 'blog_site.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'blog',
-        'USER': 'postgres',
-        'PASSWORD': 'postDuke09',
+        'NAME': 'postgres database',
+        'USER': 'postgres user',
+        'PASSWORD': 'postgresql password',
     }
 }
 
@@ -118,9 +118,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 EMAIL_HOST= 'smtp.gmail.com'
 
-EMAIL_HOST_USER = 'monday.ent9@gmail.com'
+EMAIL_HOST_USER = 'email@gmail.com'
 
-EMAIL_HOST_PASSWORD = 'alberteinstein'
+EMAIL_HOST_PASSWORD = 'password'
 
 EMAIL_PORT = 587
 
